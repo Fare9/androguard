@@ -1377,8 +1377,6 @@ class Analysis:
         self.strings = dict()
         # A dict of {EncodedMethod: MethodAnalysis}, populated on add(vm)
         self.methods = dict()
-        # A dict with the map of functions-api
-        self.map_method_api = None
 
         # Used to quickly look up methods
         self.__method_hashes = dict()
@@ -2003,37 +2001,6 @@ class Analysis:
                 meth = meth_analysis.get_method()
                 if meth.permission_api_name in permmap:
                     yield meth_analysis, permmap[meth.permission_api_name]
-
-    def load_specific_api(self, apilevel=None):
-        """
-        Load specific dict of methods by API level.
-
-        :param apilevel: the requested API level or None for default
-        :return: None
-        """
-        self.map_method_api = load_api_specific_resource_module('api_permission_mappings', apilevel)
-
-        if not self.map_method_api:
-            raise ValueError("No permission mapping found! which use the permission. "
-                             "The requested API level was '{}'".format(apilevel))
-        
-
-    def get_permissions_from_method(self, method):
-        """
-        Find the usage of permissions given an AOSP method
-
-        :param method: the name of the android method to search
-        :return: list of android permissions related to the method
-        """
-        if not self.map_method_api:
-            raise ValueError("No permissions mapping found! did you call load_specific_api method?")
-        
-        for k, v in self.map_method_api.items():
-            if method in k:
-                return v
-        
-        return []
-
 
     def get_permission_usage(self, permission, apilevel=None):
         """
