@@ -2016,22 +2016,32 @@ class Analysis:
         if not self.map_method_api:
             raise ValueError("No permission mapping found! which use the permission. "
                              "The requested API level was '{}'".format(apilevel))
-        
 
-    def get_permissions_from_method(self, method):
+
+    def get_permissions_from_method(self, class_, method):
         """
         Find the usage of permissions given an AOSP method
+
+        ...example:
+            Example of key from self.map_method_api:
+                Landroid/hardware/location/ActivityRecognitionHardware;-unregisterSink-(Landroid/hardware/location/IActivityRecognitionHardwareSink;)Z;
+            Value from map of self.map_method_api:
+                ['android.permission.LOCATION_HARDWARE']
+
+            The method is saved with two dashes ('-') in each side, so we will include them.
 
         :param method: the name of the android method to search
         :return: list of android permissions related to the method
         """
+        api_name = class_ + '-' + method + '-'
+
         if not self.map_method_api:
             raise ValueError("No permissions mapping found! did you call load_specific_api method?")
-        
+
         for k, v in self.map_method_api.items():
-            if method in k:
+            if api_name in k:
                 return v
-        
+
         return []
 
 
